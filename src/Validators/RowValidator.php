@@ -8,9 +8,12 @@ use Illuminate\Validation\ValidationException as IlluminateValidationException;
 use Maatwebsite\Excel\Concerns\SkipsOnFailure;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Exceptions\RowSkippedException;
+use Maatwebsite\Excel\Traits\HashIdTrait;
 
 class RowValidator
 {
+	use HashIdTrait;
+
     /**
      * @var Factory
      */
@@ -36,6 +39,8 @@ class RowValidator
         $rules      = $this->rules($import);
         $messages   = $this->messages($import);
         $attributes = $this->attributes($import);
+
+        $rows = $this->decodeHashedIdsBeforeValidation($rows, $import->decode);
 
         try {
             $this->validator->make($rows, $rules, $messages, $attributes)->validate();
